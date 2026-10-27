@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openrouter import OpenRouter
 
 from src.config import config
+from src.tools import run_bash
 from src.system_prompt import SYSTEM_PROMPT, LLM_TOOLS
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -15,14 +16,6 @@ load_dotenv()
 
 # client = Client(host="http://localhost:11434")
 client = OpenRouter(api_key=config.llm_api_key)
-
-def run_bash(command: str) -> str:
-    try:
-        command_result = subprocess.run(command, shell=True, capture_output=True, text=True, timeout=120)
-        out = command_result.stdout + (f"\nSTDERR:\n{command_result.stderr}" if command_result.stderr else "")
-        return f"Exit code: {command_result.returncode}\n{out}"
-    except subprocess.TimeoutExpired:
-        return "Error: command timed out after 120s"
 
 
 def call_tool(name: str, arguments: dict) -> str:
