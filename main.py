@@ -1,12 +1,19 @@
-import json, sys, subprocess
+import json, sys, subprocess, os
 import requests
 
-from ollama import Client
+from dotenv import load_dotenv
+
+from openrouter import OpenRouter
+
+# from ollama import Client
+
+
+load_dotenv()
 
 
 LLM_BASE_URL = "..."
-LLM_API_KEY = "..."
-LLM_MODEL = "qwen3.5:9b"
+LLM_API_KEY = os.getenv("LLM_API_KEY")
+LLM_MODEL = os.getenv("LLM_MODEL")
 # LLM_HEADERS = {"Content-Type": "application/json", "Authorization": f"Bearer {LLM_API_KEY}"}
 LLM_HEADERS = {"Content-Type": "application/json"}
 MAX_TURNS = 1000
@@ -42,8 +49,8 @@ LLM_TOOLS = [
 ]
 
 
-client = Client(host="http://localhost:11434")
-
+# client = Client(host="http://localhost:11434")
+client = OpenRouter(api_key=LLM_API_KEY, )
 
 def run_bash(command: str) -> str:
     try:
@@ -64,10 +71,15 @@ def call_tool(name: str, arguments: dict) -> str:
         return f"Error: calling {name}: {e}"
 
 
-def call_llm(messages):\
+def call_llm(messages, client: OpenRouter):\
     # payload = {"model": LLM_MODEL, "messages": messages, "tools": LLM_TOOLS, "tool_choices": "auto", "temperature": 0.1, "max_tokens": 4096}
+    with client as c:
+        response = c.chat.send(
+            model=LLM_MODEL,
+            messages=messages,
+        )
 
-    return client.chat(model=LLM_MODEL, messages=messages)
+    return response.choices[0].message.content
 
 
 if __name__ == "__main__":
@@ -77,5 +89,5 @@ if __name__ == "__main__":
         {"role": "user", "content": user_prompt},
         {"role": "system", "content": SYSTEM_PROMPT},
     ]
-    llm_response = call_llm(messages)
-    print(llm_response.message.content)
+    llm_response = call_llm(messages, client)
+    print(llm_response)
