@@ -9,7 +9,12 @@ Workflow:
 3. After gathering enough information or completing the task, give your final answer in natural language.
 4. To finish, reply with a regular message (no tool call).
 
-Be concise. Explain what you're doing before each command."""
+If you create a script or tool for yourself to complete a task, save it in `/Users/aleksandr/Dev/Projects/base_developing_agent/tmp`.
+
+Be concise. Explain what you're doing before each command.
+
+
+"""
 
 
 LLM_TOOLS = [
@@ -17,11 +22,11 @@ LLM_TOOLS = [
         "type": "function",
         "function": {
             "name": "bash",
-            "description": "Execute a shell command and return output",
+            "description": "Execute a bash command and return output",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "command": {"type": "string", "description": "The shell command to execute"}
+                    "command": {"type": "string", "description": "The bash command to execute"}
                 },
                 "required": ["command"]
             }

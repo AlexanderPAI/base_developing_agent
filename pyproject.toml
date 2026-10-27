@@ -16,11 +16,8 @@ dependencies = [
 ]
 
 [project.scripts]
-base-developing-agent = "base_developing_agent:main"
+base-developing-agent = "app"
 
-[build-system]
-requires = ["uv_build>=0.13.5,<0.14.0"]
-build-backend = "uv_build"
 
 [dependency-groups]
 dev = [

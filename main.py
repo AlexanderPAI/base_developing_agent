@@ -29,6 +29,8 @@ Workflow:
 3. After gathering enough information or completing the task, give your final answer in natural language.
 4. To finish, reply with a regular message (no tool call).
 
+If you create a script or tool for yourself to complete a task, save it in `/Users/aleksandr/Dev/Projects/base_developing_agent/tmp`.
+
 Be concise. Explain what you're doing before each command."""
 
 LLM_TOOLS = [
