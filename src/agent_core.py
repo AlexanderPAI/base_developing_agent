@@ -1,10 +1,13 @@
+import json
+
 from typing import Callable, Optional
 
 from ollama import Client
 from openrouter import OpenRouter
 
 from src.config import config
-from src.system_prompt import SYSTEM_PROMPT, LLM_TOOLS
+from src.system_prompt import LLM_TOOLS, build_system_prompt
+
 
 class AgentCore:
     """Agent core class"""
@@ -50,3 +53,35 @@ class AgentCore:
 
         return content, tool_calls
 
+
+    def invoke(self, user_message: str) -> None:
+        """Invoke a message"""
+        messages: list[dict[str, object]] = [
+            {"role": "system", "content": build_system_prompt()},
+            {"role": "user", "content": user_message},
+        ]
+
+        for turn in range(1, config.max_turns + 1):
+            print(f"\n{'=' * 60}\n🔄 Turn {turn}\n{'=' * 60}")
+            content, tool_calls = self.call_llm(messages)
+            if content:
+                print(f"\n🤖 {content}")
+            if not tool_calls:
+                print("(no text output)" if not content else "")
+                print("✅ Agent finished")
+                return
+            prefix = "\n" if content else ""
+            messages.append({
+                "role": "assistant",
+                "content": content or None,
+                "tool_calls": [tool_call.model_dump() for tool_call in tool_calls],
+            })
+            for tool_call in tool_calls:
+                function = tool_call.function.name
+                arguments = json.loads(tool_call.function.arguments)
+                tool_call_id = tool_call.id
+                print(f"{prefix}🔧 Tool: {function}({json.dumps(arguments, ensure_ascii=False)})")
+                result = self.call_tool(function, arguments)
+                print(f"   → {result[:500]}{'...' if len(result) > 500 else ''}")
+                messages.append({"role": "tool", "tool_call_id": tool_call_id, "content": result})
+        print(f"\n⚠️  Max turns ({config.max_turns}) reached. Stopping.")
