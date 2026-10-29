@@ -10,9 +10,13 @@ logger = logging.getLogger(__name__)
 agent = AgentCore(tools=tools)
 
 
-if __name__ == "__main__":
-    prompt = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else ""
+def main(args):
+    prompt = " ".join(args[1:]) if len(args) > 1 else ""
     if not prompt.strip():
         print("No task provided. Exiting.")
         sys.exit(1)
     agent.invoke(prompt)
+
+
+if __name__ == "__main__":
+    main(sys.argv)
