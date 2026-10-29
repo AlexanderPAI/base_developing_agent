@@ -10,16 +10,14 @@ requires-python = ">=3.15.0"
 dependencies = [
     "ollama>=0.6.3",
     "openrouter>=1.3.84",
+    "pydantic-settings>=2.16.1",
     "python-dotenv>=1.2.4",
     "requests>=2.34.2",
 ]
 
 [project.scripts]
-base-developing-agent = "base_developing_agent:main"
+base-developing-agent = "app"
 
-[build-system]
-requires = ["uv_build>=0.13.5,<0.14.0"]
-build-backend = "uv_build"
 
 [dependency-groups]
 dev = [
